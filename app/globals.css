@@ -616,20 +616,41 @@ body {
 /* --------------------------------------------------------------------------
    9 · Promotion kit
    -------------------------------------------------------------------------- */
+/*
+  A command and its copy button, on one line at any width.
+
+  The row must not wrap — a Copy button that drops below the command reads as a
+  second control rather than part of it. So the code is the flexible track and
+  is allowed to shrink past its content (`min-inline-size: 0`, which a flex item
+  otherwise refuses to do), scrolling inside its own box. The button keeps its
+  intrinsic width and stays put, which matters most: on a narrow footer column
+  the button is the real affordance and the text is just confirmation.
+*/
 .sf-install {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--vk-space-3);
-  padding: var(--vk-space-3) var(--vk-space-4);
+  gap: var(--vk-space-2);
+  padding: var(--vk-space-2) var(--vk-space-2) var(--vk-space-2) var(--vk-space-3);
   border: 1px solid var(--vk-color-border);
   border-radius: var(--vk-radius-md);
   background: var(--vk-color-surface-subtle);
 }
 
 .sf-install code {
+  flex: 1 1 auto;
+  min-inline-size: 0;
   overflow-x: auto;
   white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.sf-install code::-webkit-scrollbar {
+  display: none;
+}
+
+.sf-install > span:last-child {
+  flex: none;
 }
 
 .sf-badge-link {

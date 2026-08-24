@@ -45,6 +45,11 @@ Open <http://localhost:3000>.
 | `npm run build` | Production build — all 8 course pages prerender |
 | `npm start` | Serve the production build |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | `next typegen` then `tsc --noEmit` |
+
+> `next typegen` comes first because Next 16 generates the `PageProps` and
+> `LayoutProps` route types into `.next/types`. A bare `tsc --noEmit` on a fresh
+> clone cannot see them yet.
 
 ## Deploy
 
