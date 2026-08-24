@@ -1,0 +1,90 @@
+# SkillForge
+
+> A free, open-source Next.js 16 course marketplace and LMS template. Eight mock tech
+> courses, a learner dashboard, curriculum accordions and SVG charts — built entirely
+> with VivekUI, a React component library with zero runtime dependencies.
+
+This entire website is built with VivekUI, a free React component library with zero
+runtime dependencies.
+
+SkillForge is a demonstration template, not a live school. The courses, instructors,
+learners, reviews and progress figures are mock data in `data/courses.ts` and
+`data/learner.ts`. Nothing is for sale and no payment provider is connected. The source
+is MIT licensed and public: clone it, change the words, ship it.
+
+## Stack
+
+- Next.js 16.3 (App Router, Turbopack, async request APIs)
+- React 19 · TypeScript 5 · Node.js 20.9+
+- VivekUI 0.5 — 91 React components and 6 SVG charts, zero runtime dependencies
+- No Tailwind, no shadcn, no MUI, no CSS-in-JS. One install, one CSS import, no config.
+
+## Pages
+
+- [Home](https://skillforge.vivekkumarsingh.in/): the pitch, featured courses, how it works, pricing and FAQ
+- [Courses](https://skillforge.vivekkumarsingh.in/courses): the full catalogue with category, level, price and rating filters
+- [Course detail](https://skillforge.vivekkumarsingh.in/courses/ship-it-nextjs-16): curriculum accordion, content-mix chart, reviews and enrolment
+- [Dashboard](https://skillforge.vivekkumarsingh.in/dashboard): completion rings, an 8-week line chart and a 30-day streak sparkline
+- [Built with VivekUI](https://skillforge.vivekkumarsingh.in/built-with): every section mapped to the component that renders it
+
+## Courses in the catalogue
+
+- Ship It: Next.js 16 from Zero to Production — Full-stack, Intermediate, $89
+- TypeScript for Teams — Frontend, Intermediate, $69
+- React Server Components, Properly — Frontend, Advanced, $99
+- CSS Without a Framework — Design, Beginner, free
+- Postgres for Application Developers — Backend, Intermediate, $79
+- From Laptop to Load Balancer — DevOps, Intermediate, $95
+- Accessible by Default — Design, Beginner, free
+- LLM Apps in Production — AI, Advanced, $129
+
+## Common questions
+
+- **Do I get a certificate?** Yes, on every course including the free ones, with a
+  verification link, and it never expires.
+- **Is there lifetime access?** Yes. A purchased course is yours permanently, including
+  every future update to it.
+- **What is the refund policy?** Thirty days, no questions asked, and you keep any
+  certificate already earned.
+- **How much of each course is hands-on?** Between a third and a half — 37% to 50%
+  across the catalogue. Each course page shows a content-mix chart splitting the running
+  time into video, quizzes and projects, computed from the lesson list rather than
+  estimated.
+- **What do I need before I start?** A computer, an editor, and the level marked on the
+  course. The first lesson of every course is free to preview.
+- **Can I learn at my own pace?** Entirely. No cohort dates, no deadlines, nothing
+  expires.
+
+## Using the template
+
+```bash
+git clone https://github.com/intellectwithvivek/SkillForge.git
+cd SkillForge
+npm install
+npm run dev
+```
+
+Point `SITE.url` in `lib/site.ts` at your own domain, replace the mock data in `data/`,
+and the metadata, sitemap, JSON-LD and charts all follow.
+
+## VivekUI
+
+VivekUI is a free React component library by Vivek Kumar Singh: 91 accessible
+components, 6 SVG charts, and 12 copyable page templates, with zero runtime
+dependencies. It works in React 18 and 19, and in Next.js with both routers. 49 of the
+91 components need no client boundary and render directly in React Server Components.
+Every component ships with automated axe assertions. MIT licensed.
+
+- Install: `npm i @the_viveksingh/vivek-ui`
+- Documentation: https://ui.vivekkumarsingh.in/docs
+- Components: https://ui.vivekkumarsingh.in/docs/components
+- Charts: https://ui.vivekkumarsingh.in/docs/charts
+- npm: https://www.npmjs.com/package/@the_viveksingh/vivek-ui
+- GitHub: https://github.com/intellectwithvivek/vivek_UI
+- Author: https://vivekkumarsingh.in/
+
+## This template
+
+- Live: https://skillforge.vivekkumarsingh.in
+- Repository: https://github.com/intellectwithvivek/SkillForge
+- Licence: MIT. The footer credit is removable; a star is appreciated.

@@ -1,26 +1,693 @@
-@import "tailwindcss";
+/* ==========================================================================
+   SkillForge — site styles
 
+   Layered on top of VivekUI's stylesheet, which is entirely :where()-wrapped
+   (specificity 0). A single flat class of ours therefore always wins, and
+   there is not one !important in this file.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1 · Theme — Emerald accent
+
+   Every value below is a VivekUI token, so the whole library re-brands from
+   here: buttons, badges, focus rings, chart series, the lot.
+
+   Contrast is checked, not guessed: #047857 carries white text at 5.48:1 and
+   reads as link text on white at 5.48:1; the dark ramp lifts to 10.29:1.
+   -------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --vk-color-primary: #047857;
+  --vk-color-primary-fg: #ffffff;
+  --vk-color-primary-hover: #036049;
+  --vk-color-primary-active: #02503c;
+  --vk-color-primary-subtle: #ecfdf5;
+  --vk-color-primary-subtle-fg: #065f46;
+  --vk-color-ring: #059669;
+
+  /* Charts inherit the accent, so a ring, a line and a slice read as one system. */
+  --vk-chart-1: #047857;
+  --vk-chart-2: #0e7490;
+  --vk-chart-3: #b45309;
+  --vk-chart-4: #6d28d9;
+  --vk-chart-5: #9d174d;
+  --vk-chart-6: #3f6212;
+
+  --vk-font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+  --vk-font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Local design tokens */
+  --sf-grid-dot: rgba(4, 120, 87, 0.13);
+  --sf-glow: rgba(5, 150, 105, 0.1);
+  --sf-scrim: rgba(6, 24, 18, 0.45);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark"] {
+  --vk-color-primary: #34d399;
+  --vk-color-primary-fg: #052e22;
+  --vk-color-primary-hover: #6ee7b7;
+  --vk-color-primary-active: #10b981;
+  --vk-color-primary-subtle: #052e26;
+  --vk-color-primary-subtle-fg: #6ee7b7;
+  --vk-color-ring: #34d399;
+
+  --vk-chart-1: #34d399;
+  --vk-chart-2: #38bdf8;
+  --vk-chart-3: #fbbf24;
+  --vk-chart-4: #c084fc;
+  --vk-chart-5: #fb7185;
+  --vk-chart-6: #a3e635;
+
+  --sf-grid-dot: rgba(52, 211, 153, 0.14);
+  --sf-glow: rgba(52, 211, 153, 0.08);
+  --sf-scrim: rgba(0, 0, 0, 0.55);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  /*
+    The navbar is sticky, so anything scrolled to — an in-page anchor, a focused
+    control, a browser find match — would otherwise land underneath it. Reserving
+    the bar's own height plus a little breathing room fixes every one of those at
+    once, and it reads the same token the navbar sizes itself from.
+  */
+  scroll-padding-block-start: calc(var(--vk-navbar-height-md, 3.5rem) + var(--vk-space-4));
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-block-size: 100dvh;
+  display: flex;
+  flex-direction: column;
+
+  /*
+    VivekUI resets margins but deliberately does not own <body> — the page's
+    surface, ink and typeface are the consumer's call. Set them here, from the
+    same tokens the components read, or anything rendered outside a VivekUI
+    component falls back to the user agent default: Times New Roman on an
+    unpainted canvas.
+  */
+  background: var(--vk-color-bg);
+  color: var(--vk-color-fg);
+  font-family: var(--vk-font-sans);
+  font-size: var(--vk-text-md);
+  line-height: var(--vk-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+  Every chart ships a visually hidden <table> of its numbers so assistive tech
+  gets the figures rather than "graphic". It is clipped with the standard
+  technique, but that sets `inline-size: 1px` — which a <table> ignores, because
+  table layout treats a declared width as a minimum. A three-column data table
+  therefore still claims its min-content width and, on a 375px screen, pushes
+  the whole page sideways.
+
+  Clipping the chart root contains it. `clip` rather than `hidden` so no scroll
+  container is created, and x only so nothing vertical is affected. The tooltip
+  is drawn inside the SVG viewBox, so it cannot be cut off by this, and the
+  table stays exactly where it was in the accessibility tree.
+*/
+.vk-chart {
+  overflow-x: clip;
+}
+
+/*
+  Prose sets its block rhythm with an owl selector, then zeroes `margin-block`
+  on p / ul / ol / blockquote in a later rule of equal (zero) specificity — so
+  the later rule wins and consecutive paragraphs run together with no gap.
+
+  Restoring the library's own intent takes one flat selector: specificity 0,1,0
+  against a :where()-wrapped 0, so it lands cleanly with no !important.
+*/
+.vk-prose > * + * {
+  margin-block-start: var(--vk-space-4);
+}
+
+#sf-main {
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   2 · Skip link — the first tab stop on every page
+   -------------------------------------------------------------------------- */
+.sf-skip {
+  position: absolute;
+  inset-inline-start: var(--vk-space-4);
+  inset-block-start: -6rem;
+  z-index: 100;
+  padding: var(--vk-space-3) var(--vk-space-5);
+  border-radius: var(--vk-radius-md);
+  background: var(--vk-color-primary);
+  color: var(--vk-color-primary-fg);
+  font-weight: var(--vk-weight-semibold);
+  text-decoration: none;
+}
+
+.sf-skip:focus {
+  inset-block-start: var(--vk-space-4);
+}
+
+/* --------------------------------------------------------------------------
+   3 · The signature: ring bullets
+
+   Thin ProgressRing marks stand in for the bullet glyph across the whole
+   site. The ring is real SVG from the chart package, so the same primitive
+   that reports a completion figure also draws the punctuation — which is the
+   entire identity: everything here is a degree of progress.
+   -------------------------------------------------------------------------- */
+.sf-ring-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--vk-space-3);
+}
+
+.sf-ring-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--vk-space-3);
+  align-items: start;
+}
+
+.sf-ring-glyph {
+  line-height: 0;
+  margin-block-start: 0.15em;
+}
+
+.sf-ring-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vk-space-2);
+}
+
+/* --------------------------------------------------------------------------
+   3b · Navbar actions
+
+   Navbar.Actions deliberately stays in the bar at every width rather than
+   collapsing with the links, so what lives there has to earn its place on a
+   360px phone. The theme toggle and the hamburger always do; the search and
+   the attribution badge appear as the bar gets room for them. Nothing is lost
+   on a phone — the hero carries a full-width search of its own.
+   -------------------------------------------------------------------------- */
+.sf-nav-search {
+  display: none;
+  inline-size: min(15rem, 34vw);
+}
+
+@media (min-width: 48rem) {
+  .sf-nav-search {
+    display: block;
+  }
+}
+
+.sf-nav-badge {
+  display: none;
+  text-decoration: none;
+}
+
+@media (min-width: 64rem) {
+  .sf-nav-badge {
+    display: inline-flex;
+  }
+}
+
+/* Clone/star the repo — the point of an open-source template, so it stays in
+   the bar at every width and only sheds its text label on a phone. */
+.sf-nav-repo {
+  gap: var(--vk-space-2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sf-nav-repo-label {
+  display: none;
+}
+
+@media (min-width: 30rem) {
+  .sf-nav-repo-label {
+    display: inline;
+  }
+}
+
+/* The wordmark is a link, so it needs a real touch target rather than the
+   height of its own text. */
+.vk-navbar__brand {
+  min-block-size: 2.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   4 · Hero — a field of rings, faint enough to read through
+   -------------------------------------------------------------------------- */
+.sf-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-block-end: 1px solid var(--vk-color-border);
+}
+
+.sf-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle at center, var(--sf-grid-dot) 1.5px, transparent 1.6px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 78%);
+}
+
+.sf-hero::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -32%;
+  inset-inline-start: 50%;
+  z-index: -2;
+  inline-size: min(62rem, 130%);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sf-glow) 0%, transparent 62%);
+}
+
+.sf-hero-search {
+  max-inline-size: 34rem;
+  margin-inline: auto;
+  inline-size: 100%;
+}
+
+.sf-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vk-space-2);
+  justify-content: center;
+}
+
+.sf-chip {
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------------------
+   5 · Course cards
+   -------------------------------------------------------------------------- */
+.sf-card {
+  position: relative;
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.sf-card:hover {
+  transform: translateY(-3px);
+}
+
+/*
+  Card puts its padding on the root, so `padding="none"` — which the full-bleed
+  cover image needs — strips the body and footer too. Padding the slots
+  directly gives the cover its edge-to-edge bleed AND the copy its gutter.
+*/
+.sf-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--vk-space-3);
+  padding: var(--vk-space-5) var(--vk-space-5) var(--vk-space-4);
+}
+
+.sf-card-footer {
+  justify-content: space-between;
+  margin-block-start: 0;
+  padding: var(--vk-space-4) var(--vk-space-5) var(--vk-space-5);
+  border-block-start: 1px solid var(--vk-color-border-subtle);
+}
+
+.sf-cover {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--vk-color-surface-sunken);
+}
+
+.sf-cover img {
+  object-fit: cover;
+}
+
+.sf-cover-badge {
+  position: absolute;
+  inset-block-start: var(--vk-space-3);
+  inset-inline-start: var(--vk-space-3);
+  z-index: 1;
+}
+
+/* Two reserved lines each. The multipliers are the components' own
+   line-heights — snug (1.35) for a small heading, 1.6 for body text — so the
+   reservation tracks the type scale rather than a magic pixel value. */
+.sf-card-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-block-size: 2.7em;
+}
+
+.sf-card-subtitle {
+  min-block-size: 3.2em;
+}
+
+/* The title's link stretches over the whole card, so the entire tile is the
+   hit area while the accessible name stays the title alone. */
+.sf-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sf-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.sf-card-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+
+.sf-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vk-space-2) var(--vk-space-3);
+  color: var(--vk-color-muted);
+  font-size: var(--vk-text-sm);
+}
+
+/* Each group stays whole, so a narrow card breaks between figures, never
+   inside one — and no separator is left stranded at the end of a line. */
+.sf-meta-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vk-space-2);
+  white-space: nowrap;
+}
+
+.sf-price {
+  font-size: var(--vk-text-xl);
+  font-weight: var(--vk-weight-bold);
+  letter-spacing: var(--vk-tracking-tight);
+}
+
+.sf-price-was {
+  margin-inline-start: var(--vk-space-2);
+  font-size: var(--vk-text-sm);
+  font-weight: var(--vk-weight-normal);
+  color: var(--vk-color-muted);
+  text-decoration: line-through;
+}
+
+/* --------------------------------------------------------------------------
+   6 · Course detail
+   -------------------------------------------------------------------------- */
+.sf-split {
+  display: grid;
+  gap: var(--vk-space-8);
+  align-items: start;
+}
+
+@media (min-width: 64rem) {
+  .sf-split {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    gap: var(--vk-space-12);
+  }
+}
+
+.sf-sticky {
+  position: sticky;
+  inset-block-start: var(--vk-space-6);
+}
+
+.sf-player {
+  position: relative;
+  border-radius: var(--vk-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--vk-color-border);
+}
+
+.sf-player img {
+  object-fit: cover;
+}
+
+.sf-player-scrim {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: var(--vk-space-3);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), var(--sf-scrim));
+}
+
+.sf-lesson {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vk-space-3);
+  padding-block: var(--vk-space-3);
+  border-block-end: 1px solid var(--vk-color-border-subtle);
+}
+
+.sf-lesson:last-child {
+  border-block-end: 0;
+}
+
+.sf-lesson-name {
+  display: flex;
+  align-items: center;
+  gap: var(--vk-space-3);
+  min-inline-size: 0;
+}
+
+.sf-lesson-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--vk-space-3);
+  color: var(--vk-color-muted);
+  font-size: var(--vk-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-dist-row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--vk-space-3);
+  font-size: var(--vk-text-sm);
+  color: var(--vk-color-muted);
+}
+
+.sf-dist-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3rem;
+  align-items: center;
+  gap: var(--vk-space-3);
+}
+
+.sf-dist-count {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-review {
+  padding-block: var(--vk-space-5);
+  border-block-end: 1px solid var(--vk-color-border-subtle);
+}
+
+.sf-review:last-child {
+  border-block-end: 0;
+}
+
+.sf-review-head {
+  display: flex;
+  align-items: center;
+  gap: var(--vk-space-3);
+  margin-block-end: var(--vk-space-3);
+}
+
+/* --------------------------------------------------------------------------
+   7 · Dashboard
+   -------------------------------------------------------------------------- */
+.sf-shell {
+  display: grid;
+  gap: var(--vk-space-8);
+  align-items: start;
+}
+
+@media (min-width: 60rem) {
+  .sf-shell {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  /* The rail is second in the DOM (see the note in app/dashboard/page.tsx);
+     here it takes the left-hand column back. */
+  .sf-shell-rail {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .sf-shell-main {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+.sf-continue {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--vk-space-4);
+  align-items: center;
+}
+
+/* The minutes chart takes two of the three dashboard columns — but only once
+   there are three columns to take. In a single-column grid, a span would create
+   a phantom second track. */
+.sf-chart-wide {
+  grid-column: span 1;
+}
+
+@media (min-width: 64rem) {
+  .sf-chart-wide {
+    grid-column: span 2;
+  }
+}
+
+.sf-streak {
+  display: flex;
+  align-items: baseline;
+  gap: var(--vk-space-2);
+}
+
+.sf-streak-count {
+  font-size: var(--vk-text-3xl);
+  font-weight: var(--vk-weight-bold);
+  letter-spacing: var(--vk-tracking-tighter);
+  line-height: var(--vk-leading-none);
+}
+
+/* --------------------------------------------------------------------------
+   8 · Filters
+   -------------------------------------------------------------------------- */
+.sf-filter-bar {
+  padding: var(--vk-space-6);
+  border: 1px solid var(--vk-color-border);
+  border-radius: var(--vk-radius-lg);
+  background: var(--vk-color-surface-subtle);
+}
+
+.sf-filters {
+  display: grid;
+  gap: var(--vk-space-5);
+}
+
+@media (min-width: 48rem) {
+  .sf-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 72rem) {
+  .sf-filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.sf-result-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vk-space-3);
+}
+
+/* --------------------------------------------------------------------------
+   9 · Promotion kit
+   -------------------------------------------------------------------------- */
+.sf-install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--vk-space-3);
+  padding: var(--vk-space-3) var(--vk-space-4);
+  border: 1px solid var(--vk-color-border);
+  border-radius: var(--vk-radius-md);
+  background: var(--vk-color-surface-subtle);
+}
+
+.sf-install code {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.sf-badge-link {
+  text-decoration: none;
+}
+
+.sf-prose-narrow {
+  max-inline-size: 38rem;
+}
+
+/* --------------------------------------------------------------------------
+   10 · Utilities
+   -------------------------------------------------------------------------- */
+
+.sf-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-chart-frame {
+  padding: var(--vk-space-5);
+  border: 1px solid var(--vk-color-border);
+  border-radius: var(--vk-radius-lg);
+  background: var(--vk-color-surface);
+}
+
+.sf-instructor {
+  display: grid;
+  gap: var(--vk-space-6);
+  align-items: start;
+}
+
+@media (min-width: 48rem) {
+  .sf-instructor {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--vk-space-10);
+  }
+}
+
+.sf-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .sf-card,
+  .sf-card:hover {
+    transform: none;
+    transition: none;
+  }
 }
