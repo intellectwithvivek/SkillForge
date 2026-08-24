@@ -61,6 +61,19 @@ sitemap entry and JSON-LD `@id`, so nothing else needs touching.
 
 There are no environment variables and no external services. It builds and runs as-is.
 
+### Images cost you nothing
+
+Course covers are resized by **Unsplash's own CDN**, not by `/_next/image`
+(see [`lib/image-loader.ts`](./lib/image-loader.ts)). Vercel meters Image
+Optimization transforms, and a project that exhausts its allowance gets
+`402 Payment Required` on *every* image at once — the whole site's artwork
+disappears. A template meant to be cloned onto a Hobby plan should not depend on
+that quota, so this one doesn't: `srcset` stays fully responsive, `auto=format`
+still negotiates AVIF and WebP, and nothing is billed.
+
+Swap it for the built-in optimizer by deleting `loader` and `loaderFile` from
+[`next.config.ts`](./next.config.ts) — `remotePatterns` is already there for it.
+
 ---
 
 ## What's in it
