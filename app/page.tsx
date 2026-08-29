@@ -271,7 +271,7 @@ export default function HomePage() {
               <Stack gap={6} align="center">
                 <ProgressRing
                   value={68}
-                  size={168}
+                  diameter={168}
                   thickness={10}
                   label="Average course completion rate"
                 >
@@ -344,7 +344,7 @@ export default function HomePage() {
         name="skillforge-faq"
         eyebrow="Questions"
         title="Before you enrol"
-        defaultOpen={0}
+        defaultOpenIndex={0}
         items={FAQ_ITEMS.map((item) => ({
           id: item.id,
           question: item.question,

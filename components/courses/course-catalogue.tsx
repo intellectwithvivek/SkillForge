@@ -226,7 +226,7 @@ export function CourseCatalogue({
         </>
       ) : (
         <EmptyState
-          icon={<ProgressRing value={0} size={56} thickness={4} aria-hidden="true" />}
+          icon={<ProgressRing value={0} diameter={56} thickness={4} aria-hidden="true" />}
           title="Nothing matches those filters"
           description="Nobody has built that course yet. Widen the price range or clear a filter and try again."
           actions={<Button onClick={reset}>Clear all filters</Button>}

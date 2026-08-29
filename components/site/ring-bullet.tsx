@@ -29,7 +29,7 @@ export function RingBullet({
 }) {
   return (
     <span className="sf-ring-glyph" aria-hidden="true">
-      <ProgressRing value={value} size={size} thickness={thickness} />
+      <ProgressRing value={value} diameter={size} thickness={thickness} />
     </span>
   )
 }
