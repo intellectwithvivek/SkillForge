@@ -32,7 +32,7 @@ export function SiteNavbar() {
       <Navbar.Brand asChild>
         <Link href="/">
           <span className="sf-ring-inline">
-            <ProgressRing value={68} size={22} thickness={3} aria-hidden="true" />
+            <ProgressRing value={68} diameter={22} thickness={3} aria-hidden="true" />
             <strong>SkillForge</strong>
           </span>
         </Link>

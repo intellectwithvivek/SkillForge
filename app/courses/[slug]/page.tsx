@@ -225,7 +225,7 @@ export default async function CoursePage(props: PageProps<'/courses/[slug]'>) {
             <div className="sf-chart-frame">
               <PieChart
                 donut
-                size={280}
+                diameter={280}
                 title={`Content mix for ${course.title}`}
                 description={`How the ${totalHours(course)} hours split between video, hands-on projects and quizzes.`}
                 xLabel="Content type"

@@ -15,7 +15,7 @@ export default function NotFound() {
       <EmptyState
         headingLevel={1}
         size="lg"
-        icon={<ProgressRing value={4} size={72} thickness={5} aria-hidden="true" />}
+        icon={<ProgressRing value={4} diameter={72} thickness={5} aria-hidden="true" />}
         title="This page never got finished"
         description="The link is broken or the course has been retired. The catalogue is the fastest way back."
         actions={

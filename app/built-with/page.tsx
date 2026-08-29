@@ -275,7 +275,7 @@ export default function BuiltWithPage() {
           <Card variant="elevated" padding="lg">
             <Card.Body>
               <Stack gap={6} align="center">
-                <ProgressRing value={100} size={150} thickness={9} label="Runtime dependencies: zero">
+                <ProgressRing value={100} diameter={150} thickness={9} label="Runtime dependencies: zero">
                   <Stack gap={1} align="center">
                     <span style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1 }}>0</span>
                     <span style={{ fontSize: '0.8125rem', color: 'var(--vk-color-muted)' }}>

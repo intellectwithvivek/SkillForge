@@ -94,7 +94,7 @@ export default function DashboardPage() {
                     <div className="sf-continue">
                       <ProgressRing
                         value={enrollment.progress}
-                        size={78}
+                        diameter={78}
                         thickness={7}
                         showValue
                         label={`${course.title} — ${enrollment.progress}% complete`}
@@ -215,7 +215,7 @@ export default function DashboardPage() {
             <Card variant="outline" padding="lg">
               <Card.Body>
                 <EmptyState
-                  icon={<ProgressRing value={91} size={64} thickness={5} aria-hidden="true" />}
+                  icon={<ProgressRing value={91} diameter={64} thickness={5} aria-hidden="true" />}
                   title="Finish a course to earn your first certificate"
                   description="You are 91% through CSS Without a Framework — one capstone project away. Certificates come with a verification link you can share."
                   actions={
